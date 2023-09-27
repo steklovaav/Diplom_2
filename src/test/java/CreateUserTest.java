@@ -28,8 +28,8 @@ public class CreateUserTest extends Base {
     }
 
     @Test
-    @DisplayName("Создание пользователя, без обязательного поля")
-    public void withoutRequiredField() {
+    @DisplayName("Создание пользователя, без имени")
+    public void withoutName() {
         Response response = given()
                 .header("Content-Type", "application/json")
                 .body(new UserFields(email, password, null))
@@ -37,7 +37,11 @@ public class CreateUserTest extends Base {
         response.then().statusCode(403);
         response.then().assertThat().body("success", equalTo(false));
         response.then().assertThat().body("message", equalTo("Email, password and name are required fields"));
-        response = given()
+    }
+    @Test
+    @DisplayName("Создание пользователя, без пароля")
+    public void withoutPassword() {
+        Response response = given()
                 .header("Content-Type", "application/json")
                 .body(new UserFields(email, null, name))
                 .post("/api/auth/register");
@@ -45,6 +49,17 @@ public class CreateUserTest extends Base {
         response.then().assertThat().body("success", equalTo(false));
         response.then().assertThat().body("message", equalTo("Email, password and name are required fields"));
         response = given()
+                .header("Content-Type", "application/json")
+                .body(new UserFields(null, password, name))
+                .post("/api/auth/register");
+        response.then().statusCode(403);
+        response.then().assertThat().body("success", equalTo(false));
+        response.then().assertThat().body("message", equalTo("Email, password and name are required fields"));
+    }
+    @Test
+    @DisplayName("Создание пользователя, без почты")
+    public void withoutEmail() {
+        Response response = given()
                 .header("Content-Type", "application/json")
                 .body(new UserFields(null, password, name))
                 .post("/api/auth/register");
